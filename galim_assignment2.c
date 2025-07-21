@@ -133,9 +133,59 @@ void script() {
 }
 
 void optionOne (struct movie* head) {
+    int inpYear;
+    int numMovies = 0;
+    printf("Enter the year for which you want to see movies: ");
+    scanf("%d", &inpYear);
+
+    struct movie* curr = head;
+    while (curr != NULL) {
+        if (curr->year == inpYear) {
+            printf("%s\n", curr->title);
+            numMovies += 1;
+        }
+        curr = curr->next;
+    }
+    if (numMovies == 0) {
+        printf("No data about movies released in the year %d\n", inpYear);
+    }
+    printf("\n");
 }
 
 void optionTwo (struct movie* head) {
+    int years[122];
+    // initialize all values in years array to 0
+    memset(years, 0, sizeof(years));
+
+    int startYear = 1900;
+    double maxRating;
+    struct movie* currFirstLoop = head;
+    int year = currFirstLoop->year;
+    while (currFirstLoop != NULL) {
+        year = currFirstLoop->year;
+        // only print if there is data for that year
+        if (years[year - startYear] == 0) {
+            maxRating = currFirstLoop->ratingValue;
+            // so that it doesn't need to revisit conditional again
+            years[year - startYear] += 1;
+
+            struct movie* bestMovie = currFirstLoop;
+            // don't need to start from beginning and waste time
+            struct movie* currSecondLoop = currFirstLoop->next;
+            while (currSecondLoop != NULL) {
+                if (currSecondLoop->year == year) {
+                    if (currSecondLoop->ratingValue > maxRating) {
+                        bestMovie = currSecondLoop;
+                        maxRating = currSecondLoop->ratingValue;
+                    }
+                }
+                currSecondLoop = currSecondLoop->next;
+            }
+            printf("%d %.1f %s\n", bestMovie->year, bestMovie->ratingValue, bestMovie->title);
+        }
+        currFirstLoop = currFirstLoop->next;
+    }
+    printf("\n");
 }
 
 void optionThree (struct movie* head) {
@@ -193,14 +243,13 @@ int main ( int argc, char **argv ) {
                 optionThree(head);
                 break;
             case 4:
+                freeMovieList(head);
                 return EXIT_SUCCESS;
             default:
                 printf("You entered an incorrect choice. Try again.\n");
                 printf("\n");
         }
     }
-
-    // processMovieFile(argv[1], count);
 
     // Free the memory dynamically allocated for the movies
     freeMovieList(head);
