@@ -189,6 +189,36 @@ void optionTwo (struct movie* head) {
 }
 
 void optionThree (struct movie* head) {
+    int count = 0;
+    struct movie* curr = head;
+    char entLanguage[20];
+    char languagesCopy[100];
+
+    printf("Enter the language for which you want to see movies: ");
+    scanf("%s", entLanguage);
+    while (curr != NULL) {
+        // start at second character, cut off end bracket by reducing length by 2
+        strncpy(languagesCopy, curr->languages + 1, strlen(curr->languages) - 2);
+        // add null terminator as a character to end of string
+        languagesCopy[strlen(curr->languages) - 2] = '\0';
+
+        char* token = strtok(languagesCopy, ";");
+        while (token != NULL) {
+            if(strcmp(token, entLanguage) == 0) {
+                printf("%d %s\n", curr->year, curr->title);
+                count += 1;
+                // save the extra time
+                break;
+            }
+            // otherwise, keep checking rest of string
+            token = strtok(NULL, ";");
+        }
+        curr = curr->next;
+    }
+    if (count == 0) {
+        printf("No data about movies released in %s\n", entLanguage);
+    }
+    printf("\n");
 }
 
 /*
